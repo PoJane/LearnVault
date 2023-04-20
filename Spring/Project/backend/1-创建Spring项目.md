@@ -50,9 +50,6 @@
 |config|存放配置文件|
 注意存放mapper xml文件的资源文件夹完整限定名必须与mapper包名一致。这样在编译后，mapper接口与对应的xml才能在同一个文件夹下。（编译后的类可在target/classes/com/xxx/xxx/mapper文件夹下查看）
 
-3. 最终项目结构如下
-![[Pasted image 20230420095343.png]]
-
 ### 3. 配置
 ##### 3.1 配置application.properties
 首先项目添加了数据库、MyBatis等依赖，为使项目初始化成功，需要添加数据库相关驱动。
