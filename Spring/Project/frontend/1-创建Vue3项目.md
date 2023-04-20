@@ -115,7 +115,7 @@ axios.get('/user?ID=12345')
     methods:{
       showWords(){
         var _this=this;
-        _this.axios.get('http://localhost/8081')
+        _this.axios.get('http://localhost:8081')
         .then(function(response){
           console.log(response)
         }).catch(function(error){
