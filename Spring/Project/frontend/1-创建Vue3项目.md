@@ -147,3 +147,43 @@ axios.get('/user?ID=12345')
 ![[Pasted image 20230420130236.png]]
 
 ##### 2.3 将数据写到前端页面
+axios将成功获得的数据包装为response，response中的data才是后端真正传回的数据，可以使用response.data访问。
+- 将response.data赋值给前端定义的words
+```vue
+<script>
+  export default{
+    data(){
+      return{
+        words:{
+          id:0,
+          data:""
+        }
+      }
+    },
+    methods:{
+      showWords(){
+        var _this=this;
+        _this.axios.get('http://localhost:8081?id=1')
+        .then(function(response){
+          console.log(response)
+          _this.words=response.data
+        }).catch(function(error){
+          console.log(error)
+        }).then(function(){
+          console.log("axios done")
+        })
+      }
+    },
+    mounted(){
+      this.showWords()
+    }
+  }
+</script>
+
+<template>
+  <h1>{{ words.data }}</h1>
+</template>
+```
+
+- 浏览器即可显示数据
+![[Pasted image 20230420131249.png]]
