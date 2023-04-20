@@ -40,3 +40,98 @@ D:\MyWeb\MyProject\project_frontend>npm run dev
 若成功，即可到http://127.0.0.1:5173/看见默认Vue3页面。
 
 4. 用vscode或其他ide打开项目。
+
+### 2. 数据交互
+##### 2.1 安装Axios
+可先到到Axios官网熟悉axios
+1. 安装axios和vue-axios
+```
+npm install axios
+npm install vue-axios
+```
+
+2. 在项目中全局引用
+- 在main.js中导入vue-axios和axios，并作出适当修改。
+```js
+import { createApp } from 'vue'
+import App from './App.vue'
+import axios from 'axios'
+import VueAxios from 'vue-axios'
+
+import './assets/main.css'
+
+const app=createApp(App)
+app.use(VueAxios,axios)
+app.mount('#app')
+```
+- 注意，use函数中VueAxios要放在axios前，否则会出现Uncaught RangeError: Maximum call stack size exceeded错误。
+
+##### 2.2 使用axios与后端数据交互
+1. 官网描述
+- 官网给出的get方法：
+```js
+axios.get('/user?ID=12345') 
+	.then(function (response) {
+	// 处理成功情况 
+	console.log(response); 
+	}) .catch(function (error) { 
+	// 处理错误情况 
+	console.log(error);
+	}) .then(function () { 
+	// 总是会执行 
+});
+```
+大致按照如上结构编写get方法，获得后端输出的数据。
+
+2. 使用axios
+将App.vue中的内容删除到只剩script和template元素。
+- 在script中定义组件和数据。
+```vue
+<script>
+  export default{
+    data(){
+      return{
+        words:{
+          id:0,
+          data:""
+        }
+      }
+    }
+  }
+</script>
+```
+- 在methods中创建函数，函数中调用axios.get方法，最后在mounted中调用该函数。
+```vue
+<script>
+  export default{
+    data(){
+      return{
+        words:{
+          id:0,
+          data:""
+        }
+      }
+    },
+    methods:{
+      showWords(){
+        var _this=this;
+        _this.axios.get('http://localhost/8081')
+        .then(function(response){
+          console.log(response)
+        }).catch(function(error){
+          console.log(error)
+        }).then(function(){
+          console.log("axios done")
+        })
+      }
+    },
+    mounted(){
+      this.showWords()
+    }
+  }
+
+</script>
+```
+
+3. 跨域访问
+由于前后端地址是不同的，需要在后端设置，以允许前端进行跨域访问。
