@@ -135,27 +135,27 @@ FilterOutputStream-->DataOutputStream
 ```
 
 3. FileInputStream/FileOutputStream
-文件输入输出流
+	文件输入输出流
 
 4. FilterInputStream/FilterOutputStream
-装饰者类，具体的装饰者继承该类。
+	装饰者类，具体的装饰者继承该类。
 - DataInputStream/DataOutputStream
-以Java基本数据类型如int、double、boolean、char等和字符串为单位读写数据的装饰类。
-常用方法：
+	以Java基本数据类型如int、double、boolean、char等和字符串为单位读写数据的装饰类。
+	常用方法：
 |read方法|write方法|说明|
-|:--|:--|:---|
-|readUTF()|writeUTF(String s)|读写字符串|
-|readInt()|writeInt(int i)|读写int|
-|readDouble()|writeDouble(double d)|读写double|
-|readBoolean()|writeBoolean(boolean b)|读写boolean|
-<!--这些方法用final声明，不能被重写-->
+	|:--|:--|:---|
+	|readUTF()|writeUTF(String s)|读写字符串|
+	|readInt()|writeInt(int i)|读写int|
+	|readDouble()|writeDouble(double d)|读写double|
+	|readBoolean()|writeBoolean(boolean b)|读写boolean|
+	<!--这些方法用final声明，不能被重写-->
 
 - BufferedInputStream/BufferedOutputStream
-FileInputStream和FileOutputStream都是按字节单位在流中读取的，性能比较低，使用字节数组读取可以提高性能。
-BufferedInputStream/BufferedOutputStream两个类内部有一个字节数组作为缓冲区，读写时先从缓冲区读写，缓冲区读写完毕再调用流。
+	FileInputStream和FileOutputStream都是按字节单位在流中读取的，性能比较低，使用字节数组读取可以提高性能。
+	BufferedInputStream/BufferedOutputStream两个类内部有一个字节数组作为缓冲区，读写时先从缓冲区读写，缓冲区读写完毕再调用流。
 
 6. ByteArrayInputStream/ByteArrayOutputStream
-用于将文件输入输出到字节数组中，这个字节数组根据数据内容动态扩展。
+	用于将文件输入输出到字节数组中，这个字节数组根据数据内容动态扩展。
 
 
 ### 4. Reader/Writer
