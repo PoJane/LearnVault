@@ -159,3 +159,48 @@ FilterOutputStream-->DataOutputStream
 
 
 ### 4. Reader/Writer
+字符流文件处理中，Reader/Writer是抽象基类，主要的类如下：
+|类|说明|
+|:--|:----|
+|Reader/Writer|字符IO流的抽象基类|
+|InputStreamReader/OutputStreamWriter|适配器类，将字节流转换为字符流|
+|FileReader/FileWriter|类的输入输出目标是文件|
+|CharArrayReader/CharArrayWriter|类的输入输出目标是char数组|
+|StringReader/StringWriter|类的输入输出目标是String|
+|BufferedReader/BufferedWriter|装饰类，对输入输出流进行缓冲，可按行读取|
+|PrintWriter|装饰类，将基本类型和对象转换为字符串形式输出|
+
+##### 4.1 Reader
+1. 主要方法
+```java
+public int read() throws IOException
+public int read(char cbuf[]) throws IOException
+abstract public void close() throws IOException
+public long skip(long n) throws IOException
+public boolean ready() throws IOException
+```
+
+
+
+##### 4.2 Writer
+1. 主要方法
+```java
+public void write(int c)
+public void write(char cbuf[])
+public void write(String s) throws IOException
+abstract public void close() throws IOException
+abstract public void flush() throws IOException
+```
+
+
+##### 4.3 字符流IO体系
+1. InputStreamReader
+
+
+
+2. OutputStreamWriter
+
+
+### 5. Scanner
+单独的类，作为文本扫描器，能分析基本类型和字符串，有很多形式的next()方法。
+Scanner有很多构造方法，可以接受File、InputStream、Reader、标准输入流System.in等输入流作为参数。
