@@ -17,9 +17,25 @@ Java程序运行在JVM中，每当Java命令启动一个程序，就会启动一
 2. 方法
 Java中方法是程序执行流程的重要单位，也是栈内存的分配单位方法帧（栈帧）。方法的每一次执行都需要一个栈帧，保存方法的局部变量、返回地址等信息。线程执行流进入方法，JVM为方法分配栈帧并压入栈内存；线程流离开方法，JVM从栈内存弹出栈帧，回收内存空间。
 
-4. Java中的线程
+3. Java中的线程
 进程是程序执行和系统进行并发调度的最小单位。线程指“进程代码段”的一次顺序执行流程，是CPU调度的最小单位。一个进程可以有多个线程，各线程之间共享进程的内存空间、系统资源。
 在Java中，Java命令执行class文件时就启动了一个JVM进程，理论上该进程内部至少有main线程和GC线程两个线程。实际上，执行一个Java程序的线程数量远不只有两个。
+
+4. 线程调度
+Java线程调度和大部分操作系统一样，都是抢占式调度模型，线程有优先级，Java的线程管理是委托给操作系统的。
+
+5. 线程的生命周期
+Java线程的生命周期通过Thread内部枚举类Thread.State描述，有6个状态：NEW, RUNNABLE,
+BLOCKED, WAITING, TIMED_WAITING, TERMINATED;
+线程新建后对应NEW状态，start后进入RUNNABLE状态，得到CPU时间片才会真正开始运行run。
+与操作系统对应：
+```mermaid
+graph LR
+新建状态NEW-->就绪状态RUNNABLE
+就绪状态RUNNABLE-->运行状态RUNNABLE
+运行状态RUNNABLE-->就绪状态RUNNABLE
+运行状态RUNNABLE-->终止状态TREMINATED
+```
 
 ##### 2.2 Java中创建普通线程
 1. Thread
@@ -41,7 +57,7 @@ public static enum State{
 ```
 
 - Thread的启动和运行
-start()：启动线程，调用后JVM开启新线程执行用户定义的线程代码并分配资源，线程进入NEW状态
+start()：启动线程，调用后JVM开启新线程执行用户定义的线程代码并分配资源，线程进入RUNNABLE状态（此时不一定立刻运行，要得到CPU时间片后，才会真正运行run）
 run()：线程代码逻辑的入口方法，start后线程获得CPU执行时间，便进入run方法执行具体代码
 
 - 获得当前线程
@@ -166,3 +182,64 @@ class FutureTask{
 
 
 ##### 2.4 通过线程池创建线程
+高并发场景中，要避免频繁进行线程的创建与销毁，而是对创建好的线程进行复用，可以节省线程创建销毁的成本。线程的复用涉及线程池，Java提供了静态工厂类Executors类创建不同的线程池。
+- Executors创建线程静态方法
+|方法|说明|
+|:--|:--|
+|newFixedThreadPool(int threads)|创建固定线程数的线程池|
+
+- ExecutorService
+ExecutorService是常用线程池接口，可以执行target目标线程。ExecutorService实例负责对线程池中的线程进行管理和调度，控制最大并发线程数，提高系统资源的利用率，同时提供定时执行、单线程、并发数控等功能。
+|方法|说明|
+|:--|:--|
+|void execute(Runnable target)|执行Runnable类型target，无返回值|
+|\<T> Future\<T> submit(Callable\<T> target)|提交Callable类型target，返回Future实例|
+|Future\<?> submit(Runnable target)|提交Runnable类型target，返回Future实例|
+<!--一般不用线程工厂类Executors创建线程池，因为其阻塞队列默认是无界的！-->
+
+
+##### 2.6 线程的基本操作
+Thread类中提供了许多方法，用于操作线程。
+|方法|说明|
+|:--|:--|
+|sleep(long millis)|线程睡眠，从运行状态到限时阻塞状态，恢复后不一定立刻执行，要得到CPU时间片|
+|join()|线程合并，调用线程将被调用线程合并到自身执行流|
+|interrupt()|将线程设置为中断状态，线程会判断何时自己中断：进入阻塞状态后中断|
+|yield()|线程让步操作，放弃当前执行让出CPU，结果是不确定的，可能刚放弃就被立刻安排执行|
+
+
+### 3. 线程池原理
+##### 3.1 JUC包中线程池接口和类
+|接口或类|说明|
+|:--|:--|
+|Executor|异步执行者接口，提供了execute方法执行Runnable目标|
+|ExecutorService|异步执行着服务接口，提供了executor和submit方法|
+|ThreadPoolExecutor|线程池核心实现类|
+|ScheduledExecutorService|可延迟、定时执行任务的线程池接口|
+|ScheduledThreadPoolExecutor|提供了ScheduledExecutorService接口调度方法的具体实现|
+|Executors|静态工厂类，用于快捷创建线程池，不建议使用|
+
+##### 3.2 Executors快捷创建线程池
+|方法|说明|
+|:--|:--|
+|newSingleThreadExecutor()|创建只有一个线程的线程池|
+|newFixedThreadPool(int threads)|创建固定线程数目的线程池|
+|newCachedThreadPool()|创建不限制线程数，但会自动回收空闲线程的线程池|
+|newScheduledThreadPool()|创建可定期、延迟执行任务的线程池|
+
+##### 3.2 线程池的标准创建方式
+1. Executors快捷创建虽然方便，但非常不建议使用。原因：
+
+2. 使用ThreadPoolExecutor创建线程池
+```java
+//ThreadPoolExecutor标准构造器
+public ThreadPoolExecutor(
+	int corePoolSize, //核心线程数，即使线程空闲也不会被回收
+	int maximumPoolSize, //线程数上限
+	long keepAliveTime, //线程最大空闲时间
+	TimeUnit unit, //时间单位
+	BlockingQueue<Runnable> workQueue, // 等待队列
+	ThreadFactory threadFactory, //新线程产生方式
+	RejectedExecutionHandler handler //拒绝策略
+)
+```
