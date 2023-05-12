@@ -184,9 +184,13 @@ class FutureTask{
 ##### 2.4 通过线程池创建线程
 高并发场景中，要避免频繁进行线程的创建与销毁，而是对创建好的线程进行复用，可以节省线程创建销毁的成本。线程的复用涉及线程池，Java提供了静态工厂类Executors类创建不同的线程池。
 - Executors创建线程静态方法
+常用快捷方法：
 |方法|说明|
 |:--|:--|
+|newSingleThreadExecutor()|创建只有一个工作线程的线程池|
 |newFixedThreadPool(int threads)|创建固定线程数的线程池|
+|newCachedThreadPool()|可缓存线程池，自动回收空闲线程|
+|newScheduledThreadPool()|创建可定时、延迟线程|
 
 - ExecutorService
 ExecutorService是常用线程池接口，可以执行target目标线程。ExecutorService实例负责对线程池中的线程进行管理和调度，控制最大并发线程数，提高系统资源的利用率，同时提供定时执行、单线程、并发数控等功能。
@@ -237,9 +241,73 @@ public ThreadPoolExecutor(
 	int corePoolSize, //核心线程数，即使线程空闲也不会被回收
 	int maximumPoolSize, //线程数上限
 	long keepAliveTime, //线程最大空闲时间
-	TimeUnit unit, //时间单位
-	BlockingQueue<Runnable> workQueue, // 等待队列
+	TimeUnit timeUnit, //时间单位
+	BlockingQueue<Runnable> blockQueue, // 等待队列
 	ThreadFactory threadFactory, //新线程产生方式
 	RejectedExecutionHandler handler //拒绝策略
 )
 ```
+- 核心线程数与最大线程数
+线程池根据核心线程数和最大线程数维护工作线程，规则如下：
+1) 当前工作线程少于核心线程数时，接收到的新任务会创建新线程处理，直到工作线程数达到核心线程数
+2) 当工作线程数大于核心线程数小于最大线程数时，接收到的新任务会加入阻塞队列，直到队列满才会创建新线程处理任务
+3) 当最大线程数被设定为无界时，线程池就可以接收任意数量的并发任务
+
+3. 向线程池提交任务
+- execute方法：
+```java
+//Executor接口中的方法
+void execute(Runnable task);
+```
+该方法用于提交Runnable类目标任务。
+- submit方法：
+```java
+//ExecutorService接口中的方法
+<T> Future<T> submit(Callable<T> task);
+<T> Future<T> submit(Runnable<T> task,T result);
+Future<?> submit(Runnable task);
+```
+- execute和submit的区别
+实际上是Runnable与Callable的区别：
+|区别|execute|submit|
+|:--|:--|:--|
+|参数|只能接收Runnable类型|可以接受Callable和Runnable类型|
+|返回值|不能获得执行结果|返回Future实例，可通过该实例获得执行结果|
+|异常|不能处理任务中的异常|可以捕获任务中出现的异常|
+
+ 4. 线程池任务调度流程
+当提交新任务至线程池：
+```mermaid
+stateDiagram
+提交任务-->corePoolSize已满?
+corePoolSize已满?-->创建线程执行任务:否
+corePoolSize已满?-->等待队列已满?:是
+等待队列已满?-->进入等待队列:否
+等待队列已满?-->maximumPoolSize是否已满?
+maximumPoolSize是否已满?-->创建线程执行任务:否
+maximumPoolSize是否已满?-->执行拒绝策略:是
+```
+<!--创建线程池时，要注意核心线程数、最大线程数以及阻塞队列长度等-->
+
+ 5. ThreadFactory
+Java线程工厂接口：
+```java
+public interface ThreadFactory{
+	//创建新线程
+	Thread newThread(Runnable target);
+}
+```
+
+6. 阻塞队列
+阻塞队列：与普通队列不同在于，阻塞队列为空时会阻塞当前线程的获取元素操作，直到阻塞队列中有了元素。当队列中有了元素后，被阻塞的线程会自动被唤醒。
+Java阻塞队列基于BlockingQueue接口，位于juc包中,常用实现类:
+|实现类|说明|
+|:--|:--|
+|ArrayBlockingQueue|基于数组的有界阻塞队列，在创建时必须设置大小|
+|LinkedBlockingQueue|基于链表的阻塞队列，可设置容量，默认为无界|
+|PriorityBlockingQueue|具有优先级的无界队列|
+|DelayQueue|无界阻塞延迟队列|
+|SynchronousQueue|同步队列，不存储元素，插入元素必须先等待另一个线程移除元素|
+
+##### 3.3 调度器的钩子方法
+##### 3.4 拒绝策略
