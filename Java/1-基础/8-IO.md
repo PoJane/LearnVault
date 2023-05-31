@@ -30,6 +30,7 @@ public class File extends Object implements Serializable,Comparable<File>{
 ```
 
 ##### 2.2 常用方法
+
 |方法|说明|
 |:--|:----|
 |+createNewFile():boolean|创建此抽象路径名的新文件|
@@ -142,6 +143,7 @@ FilterOutputStream-->DataOutputStream
 - DataInputStream/DataOutputStream
 	以Java基本数据类型如int、double、boolean、char等和字符串为单位读写数据的装饰类。
 	常用方法：
+	
 |read方法|write方法|说明|
 	|:--|:--|:---|
 	|readUTF()|writeUTF(String s)|读写字符串|
@@ -160,6 +162,7 @@ FilterOutputStream-->DataOutputStream
 
 ### 4. Reader/Writer
 字符流文件处理中，Reader/Writer是抽象基类，主要的类如下：
+
 |类|说明|
 |:--|:----|
 |Reader/Writer|字符IO流的抽象基类|

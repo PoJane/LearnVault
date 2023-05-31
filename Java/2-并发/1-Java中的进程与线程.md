@@ -41,6 +41,7 @@ graph LR
 1. Thread
 Thread类表示Java中的线程，定义了很多操作线程的静态方法和实例方法。
 - Thread的属性和相关方法
+
 |属性|说明|相关方法|说明|
 |:--|:--|:--|:--|
 |id|线程id|getId|获取id|
@@ -185,6 +186,7 @@ class FutureTask{
 高并发场景中，要避免频繁进行线程的创建与销毁，而是对创建好的线程进行复用，可以节省线程创建销毁的成本。线程的复用涉及线程池，Java提供了静态工厂类Executors类创建不同的线程池。
 - Executors创建线程静态方法
 常用快捷方法：
+
 |方法|说明|
 |:--|:--|
 |newSingleThreadExecutor()|创建只有一个工作线程的线程池|
@@ -194,6 +196,7 @@ class FutureTask{
 
 - ExecutorService
 ExecutorService是常用线程池接口，可以执行target目标线程。ExecutorService实例负责对线程池中的线程进行管理和调度，控制最大并发线程数，提高系统资源的利用率，同时提供定时执行、单线程、并发数控等功能。
+
 |方法|说明|
 |:--|:--|
 |void execute(Runnable target)|执行Runnable类型target，无返回值|
@@ -204,6 +207,7 @@ ExecutorService是常用线程池接口，可以执行target目标线程。Execu
 
 ##### 2.6 线程的基本操作
 Thread类中提供了许多方法，用于操作线程。
+
 |方法|说明|
 |:--|:--|
 |sleep(long millis)|线程睡眠，从运行状态到限时阻塞状态，恢复后不一定立刻执行，要得到CPU时间片|
@@ -214,6 +218,7 @@ Thread类中提供了许多方法，用于操作线程。
 
 ### 3. 线程池原理
 ##### 3.1 JUC包中线程池接口和类
+
 |接口或类|说明|
 |:--|:--|
 |Executor|异步执行者接口，提供了execute方法执行Runnable目标|
@@ -224,6 +229,7 @@ Thread类中提供了许多方法，用于操作线程。
 |Executors|静态工厂类，用于快捷创建线程池，不建议使用|
 
 ##### 3.2 Executors快捷创建线程池
+
 |方法|说明|
 |:--|:--|
 |newSingleThreadExecutor()|创建只有一个线程的线程池|
@@ -269,6 +275,7 @@ Future<?> submit(Runnable task);
 ```
 - execute和submit的区别
 实际上是Runnable与Callable的区别：
+
 |区别|execute|submit|
 |:--|:--|:--|
 |参数|只能接收Runnable类型|可以接受Callable和Runnable类型|
@@ -301,6 +308,7 @@ public interface ThreadFactory{
 6. 阻塞队列
 阻塞队列：与普通队列不同在于，阻塞队列为空时会阻塞当前线程的获取元素操作，直到阻塞队列中有了元素。当队列中有了元素后，被阻塞的线程会自动被唤醒。
 Java阻塞队列基于BlockingQueue接口，位于juc包中,常用实现类:
+
 |实现类|说明|
 |:--|:--|
 |ArrayBlockingQueue|基于数组的有界阻塞队列，在创建时必须设置大小|
